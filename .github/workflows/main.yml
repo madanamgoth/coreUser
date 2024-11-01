@@ -35,8 +35,8 @@ jobs:
     - name: Build with Maven
       run: mvn clean install
 
-    - name: Run Tests
-      run: mvn test
+    #- name: Run Tests
+    #  run: mvn test
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
