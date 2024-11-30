@@ -26,6 +26,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private RabbitMQSender rabbitMQSender;
 
+    @Autowired
+    public PaymentServiceImpl(UserRepo userRepository, PasswordEncoder passwordEncoder, RabbitMQSender rabbitMQSender) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.rabbitMQSender = rabbitMQSender;
+    }
+
     @Override
     public ApiResponse makePayment(String paymentRequest) {
         try {

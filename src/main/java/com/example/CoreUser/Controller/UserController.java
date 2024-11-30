@@ -19,4 +19,6 @@ public class UserController {
         ApiResponse response = userService.registerUser(paymentRequest);
         return ResponseEntity.ok(response);
     }
+
+    
 }
