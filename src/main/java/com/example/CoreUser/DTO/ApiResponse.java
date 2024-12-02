@@ -1,7 +1,9 @@
 package com.example.CoreUser.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.stereotype.Component;
 
+@Component
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse {
     private String status;

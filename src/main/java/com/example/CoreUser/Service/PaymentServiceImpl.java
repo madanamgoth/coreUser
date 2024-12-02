@@ -2,6 +2,8 @@ package com.example.CoreUser.Service;
 
 import com.example.CoreUser.DTO.ApiResponse;
 import com.example.CoreUser.DTO.PaymentRequestDTO;
+import com.example.CoreUser.Exception.AccountNumberNotFoundException;
+import com.example.CoreUser.Exception.ExceptionHandler;
 import com.example.CoreUser.Model.UserDetails;
 import com.example.CoreUser.RabbitMq.RabbitMQConfig;
 import com.example.CoreUser.RabbitMq.RabbitMQSender;
@@ -27,6 +29,9 @@ public class PaymentServiceImpl implements PaymentService {
     private RabbitMQSender rabbitMQSender;
 
     @Autowired
+    private ExceptionHandler exceptionHandler;
+
+    @Autowired
     public PaymentServiceImpl(UserRepo userRepository, PasswordEncoder passwordEncoder, RabbitMQSender rabbitMQSender) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -40,12 +45,14 @@ public class PaymentServiceImpl implements PaymentService {
             return processPayment(request);
         } catch (JsonProcessingException e) {
             return new ApiResponse("failed", "Invalid payment request format");
-        } catch (Exception e) {
+        } catch (AccountNumberNotFoundException e) {
+            return exceptionHandler.accountNumberNotFound(e);
+        }catch (Exception e){
             return new ApiResponse("failed", "Payment failed");
         }
     }
 
-    public ApiResponse processPayment(PaymentRequestDTO request) {
+    public ApiResponse processPayment(PaymentRequestDTO request) throws AccountNumberNotFoundException {
         if (request.getAmount() > 0) {
             ApiResponse response = validateUserInfo(request);
             if (response.getStatus().equals("success")) {
@@ -55,10 +62,12 @@ public class PaymentServiceImpl implements PaymentService {
         return new ApiResponse("failed", "Payment failed");
     }
 
-    public ApiResponse validateUserInfo(PaymentRequestDTO request) {
+    public ApiResponse validateUserInfo(PaymentRequestDTO request) throws AccountNumberNotFoundException {
         UserDetails user = userRepository.findByAccountNumber(request.getSourceAccount());
+
         if (user == null) {
-            return new ApiResponse("failed", "User not found");
+             throw new AccountNumberNotFoundException("user not found");
+            //return new ApiResponse("failed", "User not found");
         }
         //try to validate user pin using bcrypt
         if (!passwordEncoder.matches(request.getPin(), user.getPin())) {

@@ -1,9 +1,9 @@
 #help to create yml file for the application which used postgresql database and hikari connection pool size max 10 min 5 and port 2024
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/user
-    username: postgres
-    password: Com@1357
+    url: jdbc:postgresql://localhost:5432/yourdatabase
+    username: yourusername
+    password: yourpassword
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
